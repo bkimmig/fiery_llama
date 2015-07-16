@@ -1,5 +1,5 @@
 # Fiery Llama
-A tool that can be used for matched filter analysis
+A tool that can be used for matched filter analysis. 
 
 ## Dependencies
 - latbin 
@@ -7,6 +7,10 @@ A tool that can be used for matched filter analysis
 - numpy
 - pandas
 - astropy
+
+## Authors
+- Tim Anderton
+- Brian Kimmig
 
 
 ## Installation

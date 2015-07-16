@@ -53,21 +53,22 @@ if __name__ == "__main__":
     signal_columns = args.signal_columns
     if signal_columns is None:
         signal_columns = signal_pts.columns
-    
-    print('signal')
+
     signal_filter = PointFilter(
         signal_pts,
         filtered_columns=signal_columns,
         sigma_vec=np.repeat(0.2, len(signal_columns)))
 
-    print('noise')
     noise_filter = PointFilter(
         noise_pts,
         filtered_columns=signal_columns,
         sigma_vec=np.repeat(0.2, len(signal_columns)))
 
+    print('fitering')
     dsr = data
+    print('signal')
     signal_weights = signal_filter.get_weights(dsr)
+    print('noise')
     noise_weights = noise_filter.get_weights(dsr)
     weights = signal_weights - noise_weights
 

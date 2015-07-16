@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import re
 import latbin
 
 
@@ -32,10 +33,19 @@ def compress_cloud(df, bin_size=1., npts_out=250):
     pts = Aparam.bin(df)
     centers = pts.mean()
     n_in = pts.size()
-    thresh = np.sort(n_in)[-251]
-    mask = (n_in > thresh)
+    cut_idx = min(len(centers), npts_out)
+    thresh = np.sort(n_in)[-cut_idx]
+    mask = (n_in >= thresh)
     centers['weights'] = n_in
-    return centers[mask]
+    centers = centers[mask]
+    centers = centers.reset_index()
+    colnames = []
+    for col in centers.columns:
+        if re.match('q_', col) is None:
+            colnames.append(col)
+    colnames = np.array(colnames)
+    centers = centers[colnames].copy()
+    return centers
 
 
 class PointFilter(object):  # like this name???

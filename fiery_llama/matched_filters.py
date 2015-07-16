@@ -27,14 +27,32 @@ def cubeify(df, n, columns, target="weights"):
     return out_cube
 
 
+def compress_cloud(df, bin_size=1., npts_out=250):
+    Aparam = latbin.ALattice(len(df.columns), scale=bin_size)
+    pts = Aparam.bin(df)
+    centers = pts.mean()
+    n_in = pts.size()
+    thresh = np.sort(n_in)[-251]
+    mask = (n_in > thresh)
+    centers['weights'] = n_in
+    return centers[mask]
+
+
 class PointFilter(object):  # like this name???
     def __init__(
             self,
             point_cloud,
             filtered_columns,
             sigma_vec,
+            copy=True,
     ):
+        if copy:
+            point_cloud = point_cloud.copy()
         self.point_cloud = point_cloud
+        if not "weights" in self.point_cloud.columns:
+            self.point_cloud["weights"] = np.repeat(
+                1.0/len(point_cloud),
+                len(point_cloud))
         self.filtered_columns = filtered_columns
         self.sigma_vec = sigma_vec
 
@@ -45,6 +63,5 @@ class PointFilter(object):  # like this name???
             pdata/self.sigma_vec,
             filter_pts/self.sigma_vec,
         )
-        weights = np.asarray(sim_matrix.sum(axis=1)).reshape((-1,))
-        normed_weights = weights/len(self.point_cloud)
-        return normed_weights
+        weights = sim_matrix * self.point_cloud["weights"].values
+        return weights

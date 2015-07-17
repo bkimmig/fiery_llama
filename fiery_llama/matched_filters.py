@@ -13,6 +13,19 @@ def squareify(df, nx, ny, xcol, ycol):
 
 
 def cubeify(df, n, columns, target="weights"):
+    """bins up a dataframe into a densely sampled cube
+    
+    n: list 
+      the dimensions of the cube
+    columns: list
+      the column names to bin on
+    target: column name
+      the column to sum up for each bin
+    
+    returns
+      cube: ndarray
+       the "cubeified" data
+    """
     cube_df = pd.DataFrame()
     cube_df[target] = df[target]
 
@@ -29,6 +42,9 @@ def cubeify(df, n, columns, target="weights"):
 
 
 def compress_cloud(df, bin_size=1., npts_out=250):
+    """compress a large number of points into a small representative sample
+    via multidimensional histogramming and averaging.
+    """
     Aparam = latbin.ALattice(len(df.columns), scale=bin_size)
     pts = Aparam.bin(df)
     centers = pts.mean()
@@ -48,7 +64,11 @@ def compress_cloud(df, bin_size=1., npts_out=250):
     return centers
 
 
-class PointFilter(object):  # like this name???
+class PointFilter(object):
+    """PointFilter handles efficiently calculating distances to 
+    a set of points in many dimensions.
+    """
+
     def __init__(
             self,
             point_cloud,
@@ -56,6 +76,16 @@ class PointFilter(object):  # like this name???
             sigma_vec,
             copy=True,
     ):
+        """
+        point_cloud: pandas DataFrame
+         the points in this filter
+        filtered_columns: list
+         the column names to filter on
+        sigma_vec: ndarray
+         the distance scale to use along each dimension
+        copy: bool
+         if False a copy of the input dataframe will not be made.
+        """
         if copy:
             point_cloud = point_cloud.copy()
         self.point_cloud = point_cloud

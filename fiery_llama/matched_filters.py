@@ -36,7 +36,7 @@ def compress_cloud(df, bin_size=1., npts_out=250):
     cut_idx = min(len(centers), npts_out)
     thresh = np.sort(n_in)[-cut_idx]
     mask = (n_in >= thresh)
-    centers['weights'] = n_in
+    centers['weights'] = n_in/np.sum(n_in[mask])
     centers = centers[mask]
     centers = centers.reset_index()
     colnames = []
